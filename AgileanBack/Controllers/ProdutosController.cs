@@ -7,11 +7,11 @@ namespace AgileanBack.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProdutoControllers : ControllerBase
+public class ProdutosController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public ProdutoControllers(AppDbContext context)
+    public ProdutosController(AppDbContext context)
     {
         _context = context;
     }

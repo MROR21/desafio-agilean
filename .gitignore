@@ -482,3 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+# --- Custom SQLite Ignore ---
+AgileanBack/*.db
+AgileanBack/*.db-shm
+AgileanBack/*.db-wal

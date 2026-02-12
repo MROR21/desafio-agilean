@@ -35,6 +35,13 @@ const ProductCard = ({ produto, onEditar, onExcluir }) => {
         <div className="flex items-center gap-2 mb-4 text-[13px] font-semibold flex-wrap">
         <span className="text-[#6B7280]">{produto.categoria}</span>
 
+        {!produto.ativo && (
+          <span className="bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+          🚫 Indisponível
+          </span>
+        )}
+
+
         {produto.estoque === 0 && produto.ativo && (
             <span className="bg-[#FEE2E2] text-[#991B1B] px-2 py-1 rounded-full">
             ❌ Sem estoque

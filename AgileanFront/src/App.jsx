@@ -1,52 +1,47 @@
-import {useEffect, useState} from 'react';
-import api from './services/api';
+import { useEffect, useState } from 'react'
+import api from './services/api'
+import ProductCard from './components/ProductCard'
 
-function App(){
+function App() {
   const [produtos, setProdutos] = useState([])
-  const [erro, setErro] = useState(null)
 
   useEffect(() => {
-
-    async function carregarProdutos(){
-      try{
+    async function carregarProdutos() {
+      try {
         const response = await api.get('/produtos')
         setProdutos(response.data)
-        console.log("Sucesso! Dados recebidos:", response.data)
       } catch (err) {
-        setErro(err.message)
-        console.error("Erro ao conectar no Back:", err)
+        console.error("Erro ao carregar:", err)
       }
     }
-
     carregarProdutos()
-}, [])
+  }, [])
 
-return(
-  <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-4">
-      <h1 className="text-4xl font-bold text-blue-500 mb-8">Agilean System </h1>
+  
+return (
+    <div className="min-h-screen bg-[#F9FAFB] font-sans">
+      <header className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h1 className="text-[28px] font-bold text-[#1F2937]">Catálogo de Produtos</h1>
+        <button className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-3 rounded-[8px] font-semibold shadow-sm transition-all flex items-center justify-center gap-2">
+          <span>+</span> Novo Produto
+        </button>
+      </header>
 
-      <div className="bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 border-b border-slate-700 pb-2">Status da API</h2>
-        
-        {erro ? (
-          <div className="text-red-400">
-            <p className="font-bold"> Erro de Conexão:</p>
-            <p className="text-sm bg-red-900/20 p-2 mt-2 rounded">{erro}</p>
-          </div>
-        ) : produtos.length > 0 ? (
-          <div className="text-green-400">
-            <p className="text-2xl font-bold"> Conectado!</p>
-            <p className="text-slate-300 mt-2">Encontramos **{produtos.length}** produtos no banco.</p>
-          </div>
-        ) : (
-          <div className="text-yellow-400">
-            <p className="text-2xl font-bold"> Quase lá...</p>
-            <p className="text-slate-300 mt-2">Conectado ao Back-end, mas a tabela de produtos parece vazia.</p>
-          </div>
-        )}
-      </div>
+      <main className="max-w-7xl mx-auto px-4 pb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[24px]">
+          {produtos.length > 0 ? (
+            produtos.map(produto => (
+              <ProductCard key={produto.id} produto={produto} />
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <p className="text-[#6B7280] text-lg">Nenhum produto encontrado no estoque.</p>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   )
 }
 
-export default App;
+export default App

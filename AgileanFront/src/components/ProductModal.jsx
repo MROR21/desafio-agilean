@@ -14,7 +14,7 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
         setFormData(produtoEdicao);
       } else {
         setFormData({
-          nome: '', descricao: '', preco: '', estoque: '', categoria: '', imagemUrl: ''
+          nome: '', descricao: '', preco: '', estoque: '', categoria: '', imagemUrl: '', ativo: true
         });
       }
       setErros({});
@@ -39,31 +39,44 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
     return Object.keys(novosErros).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validar()) return;
 
+    const payload = {
+        ...formData,
+        preco: Number(formData.preco),
+        estoque: Number(formData.estoque),
+    };
+
     try {
-      if (produtoEdicao) {
-        await api.put(`/produtos/${produtoEdicao.id}`, formData);
-      } else {
-        await api.post('/produtos', formData);
-      }
-      onSucesso();
-      onClose();
+        if (produtoEdicao) {
+        await api.put(`/produtos/${produtoEdicao.id}`, payload);
+        } else {
+        await api.post('/produtos', payload);
+        }
+        onSucesso();
+        onClose();
     } catch (err) {
-      console.error(err);
-      alert("Erro ao salvar produto no servidor.");
+        console.error(err);
+        alert("Erro ao salvar produto no servidor.");
     }
-  };
+    };
+
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-[12px] w-full max-w-lg p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
+    <div 
+       onClick={onClose}
+       className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm"   
+    >
+      <div 
+       onClick={(e) => e.stopPropagation()}
+       className="bg-white rounded-[12px] w-full max-w-lg p-8 shadow-2xl overflow-y-auto max-h-[90vh]"
+     >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[24px] font-bold text-[#1F2937]">
-            {produtoEdicao ? "Editar Produto" : "Cadastrar Produto"}
+            {produtoEdicao ? "Editar Produto" : "Novo Produto"}
           </h2>
           <button onClick={onClose} className="text-[#6B7280] hover:text-black">
             ✕
@@ -78,7 +91,9 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
             <input
               required
               placeholder="Ex: Notebook Gamer Nitro 5"
-              className="w-full p-3 border border-[#E5E7EB] rounded-[8px] focus:border-[#3B82F6] outline-none"
+              className={`w-full p-3 border rounded-[8px] outline-none
+                ${erros.nome ? 'border-red-500' : 'border-[#E5E7EB]'}
+                focus:border-[#3B82F6]`}
               value={formData.nome}
               onChange={(e) =>
                 setFormData({ ...formData, nome: e.target.value })
@@ -98,7 +113,9 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
             <textarea
               rows="3"
               placeholder="Ex: Descreva o Produto..."
-              className="w-full p-3 border border-[#E5E7EB] rounded-[8px] focus:border-[#3B82F6] outline-none resize-none"
+              className={`w-full p-3 border rounded-[8px] outline-none
+                ${erros.descricao ? 'border-red-500' : 'border-[#E5E7EB]'}
+                focus:border-[#3B82F6]`}
               value={formData.descricao}
               onChange={(e) =>
                 setFormData({ ...formData, descricao: e.target.value })
@@ -121,11 +138,13 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
                 step="0.01"
                 required
                 placeholder="0,00"
-                className="w-full p-3 border border-[#E5E7EB] rounded-[8px] focus:border-[#3B82F6] outline-none"
+                className={`w-full p-3 border rounded-[8px] outline-none
+                ${erros.preco ? 'border-red-500' : 'border-[#E5E7EB]'}
+                focus:border-[#3B82F6]`}
                 value={formData.preco}
-                onChange={(e) =>
-                  setFormData({ ...formData, preco: e.target.value })
-                }
+                onChange={(e) => {
+                   setFormData({ ...formData, preco: e.target.value })
+                }}
               />
               {erros.preco && (
                 <p className="text-red-500 text-xs mt-1 font-medium">
@@ -142,7 +161,9 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
                 type="number"
                 required
                 placeholder="0"
-                className="w-full p-3 border border-[#E5E7EB] rounded-[8px] focus:border-[#3B82F6] outline-none"
+                className={`w-full p-3 border rounded-[8px] outline-none
+                ${erros.estoque ? 'border-red-500' : 'border-[#E5E7EB]'}
+                focus:border-[#3B82F6]`}
                 value={formData.estoque}
                 onChange={(e) =>
                   setFormData({ ...formData, estoque: e.target.value })
@@ -161,7 +182,10 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
               Categoria *
             </label>
             <select
-              className="w-full p-3 border border-[#E5E7EB] rounded-[8px] bg-white outline-none focus:border-[#3B82F6]"
+            required
+              className={`w-full p-3 border rounded-[8px] outline-none
+                ${erros.categoria ? 'border-red-500' : 'border-[#E5E7EB]'}
+                focus:border-[#3B82F6]`}
               value={formData.categoria}
               onChange={(e) =>
                 setFormData({ ...formData, categoria: e.target.value })
@@ -188,7 +212,9 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
             </label>
             <input
               placeholder="https://exemplo.com/foto-do-produto.jpg"
-              className="w-full p-3 border border-[#E5E7EB] rounded-[8px] focus:border-[#3B82F6] outline-none"
+              className={`w-full p-3 border rounded-[8px] outline-none
+                ${erros.imagem ? 'border-red-500' : 'border-[#E5E7EB]'}
+                focus:border-[#3B82F6]`}
               value={formData.imagemUrl}
               onChange={(e) =>
                 setFormData({ ...formData, imagemUrl: e.target.value })
@@ -205,7 +231,9 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
                     src={formData.imagemUrl}
                     alt="Preview"
                     className="h-full w-full object-contain"
-                    onError={(e) => (e.target.style.display = "none")}
+                    onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/300x200?text=Imagem+Inválida";
+                    }}
                   />
                 </div>
               </div>
@@ -246,10 +274,20 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
               Cancelar
             </button>
             <button
-              type="submit"
-              className="bg-[#3B82F6] text-white px-8 py-3 rounded-[8px] font-bold hover:bg-[#2563EB] shadow-md transition-all active:scale-95"
+                type="submit"
+                disabled={
+                    !formData.nome ||
+                    !formData.categoria ||
+                    !formData.preco ||
+                    Number(formData.preco) <= 0 ||
+                    formData.estoque === '' ||
+                    Number(formData.estoque) < 0
+                }
+            className="bg-[#3B82F6] text-white px-8 py-3 rounded-[8px] font-bold 
+                        hover:bg-[#2563EB] shadow-md transition-all active:scale-95
+                        disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Salvar Produto
+            Salvar Produto
             </button>
           </div>
         </form>

@@ -7,14 +7,13 @@ function App() {
  const [produtos, setProdutos] = useState([]);
  const [busca, setBusca] = useState('');  
  const [categoria, setCategoria] = useState('Todas');
+ const [categorias, setCategorias] = useState([]);
  const [disponibilidade, setDisponibilidade] = useState('Todos'); 
  const [ordenacao, setOrdenacao] = useState('recentes');
  const [modalAberto, setModalAberto] = useState(false); 
  const [produtoParaEditar, setProdutoParaEditar] = useState(null);
  const [modalDeleteAberto, setModalDeleteAberto] = useState(false);
  const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
-
- const listaCategorias = ['Todas', 'Eletrônicos', 'Roupas', 'Alimentos', 'Acessórios', 'Monitores', 'Periféricos'];
 
  function abrirModalCadastro() {
     setProdutoParaEditar(null); 
@@ -51,9 +50,15 @@ async function confirmarExclusao() {
         console.error("Erro ao carregar:", err)
       }
     }
-    
+
+  async function carregarCategorias() {
+  const res = await api.get('/produtos/categorias');
+  setCategorias(res.data);
+  }  
+
   useEffect(() => { 
     carregarProdutos()
+    carregarCategorias()
   }, [])
 
  const produtosProcessados = produtos
@@ -61,10 +66,13 @@ async function confirmarExclusao() {
     const matchesBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
     const matchesCategoria = categoria === 'Todas' || p.categoria === categoria;
     
-    const matchesDisponibilidade = 
+    const matchesDisponibilidade =
       disponibilidade === 'Todos' ||
-      (disponibilidade === 'disponiveis' && p.estoque > 0 && p.ativo === true) ||
-      (disponibilidade === 'semEstoque' && (p.estoque === 0 || p.ativo ===false));
+      (disponibilidade === 'disponiveis' && p.ativo && p.estoque >= 10) ||
+      (disponibilidade === 'baixo' && p.ativo && p.estoque >= 1 && p.estoque < 10) ||
+      (disponibilidade === 'semEstoque' && p.ativo && p.estoque === 0) ||
+      (disponibilidade === 'inativos' && !p.ativo);
+
 
     return matchesBusca && matchesCategoria && matchesDisponibilidade;
   })
@@ -89,53 +97,54 @@ return (
         </button>
       </header>
 
-    <div className="max-w-7xl mx-auto px-4 mb-8">
-      <div className="flex flex-col md:flex-row gap-[20px]">
-        <div className="flex-grow">
-          <input 
-            type="text"
-            placeholder="Buscar produtos..."
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="w-full p-[12px] border border-[#E5E7EB] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] bg-white text-[#1F2937]"
-          />
-        </div>
+  
+      <div className="max-w-7xl mx-auto px-4 mb-8">
+      <div className="flex flex-col lg:flex-row gap-[20px] items-center">
 
-        <div className="w-full md:w-[250px]">
-          <select 
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-            className="w-full p-[12px] border border-[#E5E7EB] rounded-[8px] focus:outline-none focus:border-[#3B82F6] bg-white text-[#1F2937] appearance-none"
-          >
-            <option value="Todas">Todas as Categorias</option>
-            {listaCategorias.filter(c => c !== 'Todas').map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
+        <input
+          type="text"
+          placeholder="Buscar produtos..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="flex-grow p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white text-[#1F2937]"
+        />
+
+        <select
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+          className="w-full lg:w-[220px] p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white"
+        >
+          <option value="Todas">Todas as Categorias</option>
+          {categorias.map(c => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+
+        <select
+          value={disponibilidade}
+          onChange={(e) => setDisponibilidade(e.target.value)}
+          className="w-full lg:w-[200px] p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white"
+        >
+          <option value="Todos">Todos</option>
+          <option value="disponiveis">Disponíveis</option>
+          <option value="baixo">Estoque Baixo</option>
+          <option value="semEstoque">Sem Estoque</option>
+          <option value="inativos">Inativos</option>
+        </select>
+
+        <select
+          value={ordenacao}
+          onChange={(e) => setOrdenacao(e.target.value)}
+          className="w-full lg:w-[200px] p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white"
+        >
+          <option value="recentes">Mais Recentes</option>
+          <option value="nome">Nome</option>
+          <option value="preco-menor">Menor Preço</option>
+          <option value="preco-maior">Maior Preço</option>
+        </select>
+
       </div>
     </div>
-
-    <select 
-      value={disponibilidade}
-      onChange={(e) => setDisponibilidade(e.target.value)}
-      className="p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white text-[#1F2937] focus:outline-none"
-   >
-      <option value="Todos">Todos os Status</option>
-      <option value="disponiveis">Disponíveis</option>
-      <option value="semEstoque">Sem Estoque</option>
-    </select>
-
-    <select 
-      value={ordenacao}
-      onChange={(e) => setOrdenacao(e.target.value)}
-      className="p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white text-[#1F2937] focus:outline-none"
-    >
-      <option value="recentes">Mais Recentes</option>
-      <option value="nome">Nome (A-Z)</option>
-      <option value="preco-menor">Menor Preço</option>
-      <option value="preco-maior">Maior Preço</option>
-    </select>
 
       <main className="max-w-7xl mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[24px]">

@@ -1,8 +1,4 @@
-import React from 'react';
-
 const ProductCard = ({ produto, onEditar, onExcluir }) => {
-  const isEstoqueBaixo = produto.estoque >= 1 && produto.estoque < 10;
-  const isSemEstoque = produto.estoque === 0;
   const isInativo = !produto.ativo;
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {

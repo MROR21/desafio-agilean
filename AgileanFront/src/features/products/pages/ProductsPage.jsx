@@ -4,7 +4,7 @@ import ProductCard from "../components/ProductCard";
 import api from "../../../api/api";
 
 
-function App() {
+function ProductPage() {
  const [produtos, setProdutos] = useState([]);
  const [busca, setBusca] = useState('');  
  const [categoria, setCategoria] = useState('Todas');
@@ -207,4 +207,4 @@ return (
   )
 }
 
-export default App
+export default ProductPage

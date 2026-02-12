@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../../api/api';
 
 
@@ -214,7 +214,7 @@ const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
             <input
               placeholder="https://exemplo.com/foto-do-produto.jpg"
               className={`w-full p-3 border rounded-[8px] outline-none
-                ${erros.imagem ? 'border-red-500' : 'border-[#E5E7EB]'}
+                ${'border-[#E5E7EB]'}
                 focus:border-[#3B82F6]`}
               value={formData.imagemUrl}
               onChange={(e) =>

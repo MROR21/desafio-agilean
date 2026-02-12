@@ -11,6 +11,8 @@ function App() {
  const [ordenacao, setOrdenacao] = useState('recentes');
  const [modalAberto, setModalAberto] = useState(false); 
  const [produtoParaEditar, setProdutoParaEditar] = useState(null);
+ const [modalDeleteAberto, setModalDeleteAberto] = useState(false);
+ const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
 
  const listaCategorias = ['Todas', 'Eletrônicos', 'Roupas', 'Alimentos', 'Acessórios', 'Monitores', 'Periféricos'];
 
@@ -24,10 +26,22 @@ function App() {
    setModalAberto(true);
   }
 
- function fecharModal() {
-   setModalAberto(false);
-   setProdutoParaEditar(null);
+ function prepararExclusao(produto) {
+  setProdutoParaExcluir(produto);
+  setModalDeleteAberto(true);
+} 
+
+async function confirmarExclusao() {
+  try {
+    await api.delete(`/produtos/${produtoParaExcluir.id}`);
+    carregarProdutos();
+    setModalDeleteAberto(false); 
+    setProdutoParaExcluir(null); 
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao excluir produto.");
   }
+}
 
  async function carregarProdutos() {
       try {
@@ -130,7 +144,7 @@ return (
               <ProductCard key={produto.id} 
                produto={produto}
                onEditar={() => abrirEdicao(produto)}
-               onExcluir={() => carregarProdutos()} 
+               onExcluir={() => prepararExclusao(produto)} 
               />
             ))
           ) : (
@@ -146,6 +160,39 @@ return (
         onSucesso={carregarProdutos}
         produtoEdicao={produtoParaEditar} 
       />
+
+      {modalDeleteAberto && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-[12px] w-full max-w-md p-6 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <span className="text-red-600 text-xl">⚠️</span>
+              </div>
+              <h3 className="text-lg font-bold text-[#1F2937] mb-2">Confirmar Exclusão</h3>
+              <p className="text-sm text-[#6B7280] mb-6">
+                Tem certeza que deseja excluir o produto <span className="font-bold text-[#1F2937]">"{produtoParaExcluir?.nome}"</span>?
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setModalDeleteAberto(false)}
+                className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-[#374151] rounded-[8px] font-semibold transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmarExclusao}
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-[8px] font-semibold transition-all shadow-md active:scale-95"
+              >
+                Sim, Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   )
 }

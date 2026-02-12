@@ -55,7 +55,7 @@ const ProductCard = ({ produto, onEditar, onExcluir }) => {
         <button onClick={onEditar} className="text-[14px] font-semibold text-[#6B7280] hover:text-[#3B82F6]">
             ✏️ Editar
         </button>
-        <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#EF4444]">
+        <button onClick={onExcluir} className="text-[14px] font-semibold text-[#6B7280] hover:text-[#EF4444]">
             🗑️ Excluir
         </button>
         </div>

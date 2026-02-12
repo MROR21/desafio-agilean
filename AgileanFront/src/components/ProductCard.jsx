@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProductCard = ({ produto }) => {
+const ProductCard = ({ produto, onEditar, onExcluir }) => {
   const isEstoqueBaixo = produto.estoque >= 1 && produto.estoque < 10;
   const isSemEstoque = produto.estoque === 0;
   const isInativo = !produto.ativo;
@@ -52,7 +52,7 @@ const ProductCard = ({ produto }) => {
         </span>
         
         <div className="flex gap-3">
-        <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#3B82F6]">
+        <button onClick={onEditar} className="text-[14px] font-semibold text-[#6B7280] hover:text-[#3B82F6]">
             ✏️ Editar
         </button>
         <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#EF4444]">

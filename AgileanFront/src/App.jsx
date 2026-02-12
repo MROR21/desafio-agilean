@@ -10,8 +10,24 @@ function App() {
  const [disponibilidade, setDisponibilidade] = useState('Todos'); 
  const [ordenacao, setOrdenacao] = useState('recentes');
  const [modalAberto, setModalAberto] = useState(false); 
+ const [produtoParaEditar, setProdutoParaEditar] = useState(null);
 
  const listaCategorias = ['Todas', 'Eletrônicos', 'Roupas', 'Alimentos', 'Acessórios', 'Monitores', 'Periféricos'];
+
+ function abrirModalCadastro() {
+    setProdutoParaEditar(null); 
+    setModalAberto(true);
+  }
+
+ function abrirEdicao(produto) {
+   setProdutoParaEditar(produto);
+   setModalAberto(true);
+  }
+
+ function fecharModal() {
+   setModalAberto(false);
+   setProdutoParaEditar(null);
+  }
 
  async function carregarProdutos() {
       try {
@@ -33,8 +49,8 @@ function App() {
     
     const matchesDisponibilidade = 
       disponibilidade === 'Todos' ||
-      (disponibilidade === 'disponiveis' && p.estoque > 0) ||
-      (disponibilidade === 'semEstoque' && p.estoque === 0);
+      (disponibilidade === 'disponiveis' && p.estoque > 0 && p.ativo === true) ||
+      (disponibilidade === 'semEstoque' && (p.estoque === 0 || p.ativo ===false));
 
     return matchesBusca && matchesCategoria && matchesDisponibilidade;
   })
@@ -52,7 +68,7 @@ return (
       <header className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="text-[28px] font-bold text-[#1F2937]">Catálogo de Produtos</h1>
         <button 
-        onClick={() => setModalAberto(true)} 
+        onClick={abrirModalCadastro}
         className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-3 rounded-[8px] font-semibold shadow-sm transition-all flex items-center justify-center gap-2"
         >
           <span>+</span> Novo Produto
@@ -111,7 +127,11 @@ return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[24px]">
           {produtosProcessados.length > 0 ? (
             produtosProcessados.map(produto => (
-              <ProductCard key={produto.id} produto={produto} />
+              <ProductCard key={produto.id} 
+               produto={produto}
+               onEditar={() => abrirEdicao(produto)}
+               onExcluir={() => carregarProdutos()} 
+              />
             ))
           ) : (
             <div className="col-span-full py-20 text-center">
@@ -123,7 +143,8 @@ return (
       <ProductModal 
         isOpen={modalAberto} 
         onClose={() => setModalAberto(false)} 
-        onSucesso={carregarProdutos} 
+        onSucesso={carregarProdutos}
+        produtoEdicao={produtoParaEditar} 
       />
     </div>
   )

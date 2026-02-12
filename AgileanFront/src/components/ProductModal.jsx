@@ -1,68 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
-const ProductModal = ({ isOpen, onClose, onSucesso }) => {
+const ProductModal = ({ isOpen, onClose, onSucesso, produtoEdicao }) => {
 
   const [erros, setErros] = useState({});
   const [formData, setFormData] = useState({
-    nome: '',
-    descricao: '',
-    preco: '',
-    estoque: '',
-    categoria: '',
-    imagemUrl: '',
-    ativo: true
+    nome: '', descricao: '', preco: '', estoque: '', categoria: '', imagemUrl: '', ativo: true
   });
 
-  useEffect(() => {
+ useEffect(() => {
     if (isOpen) {
-      setFormData({
-        nome: '',
-        descricao: '',
-        preco: '',
-        estoque: '',
-        categoria: '',
-        imagemUrl: '',
-        ativo: true
-      });
+      if (produtoEdicao) {
+        setFormData(produtoEdicao);
+      } else {
+        setFormData({
+          nome: '', descricao: '', preco: '', estoque: '', categoria: '', imagemUrl: ''
+        });
+      }
+      setErros({});
     }
-  }, [isOpen]);
+  }, [isOpen, produtoEdicao]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
   
-  let novosErros = {};
 
-  if (!formData.nome.trim()) novosErros.nome = "O nome é obrigatório.";
-  if (formData.nome.length > 100) novosErros.nome = "Máximo de 100 caracteres.";
-  if (formData.descricao.length > 500) novosErros.descricao = "Máximo de 500 caracteres.";
-  if (!formData.categoria) novosErros.categoria = "Selecione uma categoria.";
-  if (!formData.preco || Number(formData.preco) <= 0) novosErros.preco = "O preço deve ser maior que zero.";
-  if (formData.estoque === '' || Number(formData.estoque) < 0) novosErros.estoque = "O estoque não pode ser negativo.";
+  const validar = () => {
+    let novosErros = {};
 
-  if (Object.keys(novosErros).length > 0) {
+    if (!formData.nome.trim()) novosErros.nome = "O nome é obrigatório.";
+    if (formData.nome.length > 100) novosErros.nome = "Máximo de 100 caracteres.";
+    if (formData.descricao && formData.descricao.length > 500) novosErros.descricao = "Máximo de 500 caracteres.";
+    if (!formData.categoria) novosErros.categoria = "Selecione uma categoria.";
+    if (!formData.preco || Number(formData.preco) <= 0) novosErros.preco = "O preço deve ser maior que zero.";
+    if (formData.estoque === '' || Number(formData.estoque) < 0) novosErros.estoque = "O estoque não pode ser negativo.";
+
     setErros(novosErros);
-    return;
-  }
+    return Object.keys(novosErros).length === 0;
+  };
 
-  setErros({});
-  try {
-    await api.post('/produtos', formData);
-    onSucesso(); 
-    onClose();   
-  } catch (err) {
-    console.error("Erro ao cadastrar:", err);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validar()) return;
+
+    try {
+      if (produtoEdicao) {
+        await api.put(`/produtos/${produtoEdicao.id}`, formData);
+      } else {
+        await api.post('/produtos', formData);
+      }
+      onSucesso();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao salvar produto no servidor.");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="bg-white rounded-[12px] w-full max-w-lg p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[24px] font-bold text-[#1F2937]">
-            Cadastrar Produto
+            {produtoEdicao ? "Editar Produto" : "Cadastrar Produto"}
           </h2>
           <button onClick={onClose} className="text-[#6B7280] hover:text-black">
             ✕
@@ -83,7 +84,11 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
                 setFormData({ ...formData, nome: e.target.value })
               }
             />
-            {erros.nome && <p className="text-red-500 text-xs mt-1 font-medium">{erros.nome}</p>}
+            {erros.nome && (
+              <p className="text-red-500 text-xs mt-1 font-medium">
+                {erros.nome}
+              </p>
+            )}
           </div>
 
           <div>
@@ -99,7 +104,11 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
                 setFormData({ ...formData, descricao: e.target.value })
               }
             />
-            {erros.descricao && <p className="text-red-500 text-xs mt-1 font-medium">{erros.descricao}</p>}
+            {erros.descricao && (
+              <p className="text-red-500 text-xs mt-1 font-medium">
+                {erros.descricao}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -118,7 +127,11 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
                   setFormData({ ...formData, preco: e.target.value })
                 }
               />
-                {erros.preco && <p className="text-red-500 text-xs mt-1 font-medium">{erros.preco}</p>}
+              {erros.preco && (
+                <p className="text-red-500 text-xs mt-1 font-medium">
+                  {erros.preco}
+                </p>
+              )}
             </div>
 
             <div>
@@ -135,7 +148,11 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
                   setFormData({ ...formData, estoque: e.target.value })
                 }
               />
-                {erros.estoque && <p className="text-red-500 text-xs mt-1 font-medium">{erros.estoque}</p>}
+              {erros.estoque && (
+                <p className="text-red-500 text-xs mt-1 font-medium">
+                  {erros.estoque}
+                </p>
+              )}
             </div>
           </div>
 
@@ -150,7 +167,7 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
                 setFormData({ ...formData, categoria: e.target.value })
               }
             >
-             <option value="">Selecione...</option>
+              <option value="">Selecione...</option>
               <option value="Eletrônicos">Eletrônicos</option>
               <option value="Roupas">Roupas</option>
               <option value="Alimentos">Alimentos</option>
@@ -158,7 +175,11 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
               <option value="Monitores">Monitores</option>
               <option value="Periféricos">Periféricos</option>
             </select>
-            {erros.categoria && <p className="text-red-500 text-xs mt-1 font-medium">{erros.categoria}</p>}
+            {erros.categoria && (
+              <p className="text-red-500 text-xs mt-1 font-medium">
+                {erros.categoria}
+              </p>
+            )}
           </div>
 
           <div>
@@ -190,6 +211,31 @@ const ProductModal = ({ isOpen, onClose, onSucesso }) => {
               </div>
             )}
           </div>
+
+          {produtoEdicao && (
+            <div>
+              <label className="block text-sm font-semibold text-[#374151] mb-1">
+                Status do Produto *
+              </label>
+              <select
+                className={`w-full p-3 border rounded-[8px] outline-none transition-all ${
+                  formData.ativo
+                    ? "border-green-200 bg-green-50/30"
+                    : "border-red-200 bg-red-50/30"
+                }`}
+                value={formData.ativo}
+                onChange={(e) =>
+                  setFormData({ ...formData, ativo: e.target.value === "true" })
+                }
+              >
+                <option value="true">Ativo (Disponível para venda)</option>
+                <option value="false">Inativo (Indisponível)</option>
+              </select>
+              <p className="text-[11px] text-[#6B7280] mt-1 italic">
+                Produtos inativos não aparecem para os clientes finais.
+              </p>
+            </div>
+          )}
 
           <div className="flex justify-end gap-4 mt-10">
             <button

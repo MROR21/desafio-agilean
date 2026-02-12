@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AgileanBack.Models;
+namespace AgileanBack.Features.Produtos;
 
 public class Produto
 {

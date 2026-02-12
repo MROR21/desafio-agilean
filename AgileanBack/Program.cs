@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using AgileanBack.Data;
+using AgileanBack.Infrastructure.Data;
+using AgileanBack.Features.Produtos;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ProdutoService>();
 
 var app = builder.Build();
 

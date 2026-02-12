@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using AgileanBack.Models;
+using AgileanBack.Features.Produtos;
 
-namespace AgileanBack.Data;
+namespace AgileanBack.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {

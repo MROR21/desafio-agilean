@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace AgileanBack.Data.Migrations
+namespace AgileanBack.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AtualizaModeloProduto : Migration

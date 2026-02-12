@@ -3,7 +3,16 @@ import api from './services/api'
 import ProductCard from './components/ProductCard'
 
 function App() {
-  const [produtos, setProdutos] = useState([])
+ const [produtos, setProdutos] = useState([]);
+ const [busca, setBusca] = useState('');  
+ const [categoria, setCategoria] = useState('Todas');
+ const listaCategorias = ['Todas', 'Eletrônicos', 'Roupas', 'Alimentos', 'Acessórios', 'Monitores', 'Periféricos'];
+
+ const produtosFiltrados = produtos.filter(p => {
+ const matchesBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
+ const matchesCategoria = categoria === 'Todas' || p.categoria === categoria;
+  return matchesBusca && matchesCategoria;
+  });
 
   useEffect(() => {
     async function carregarProdutos() {
@@ -17,7 +26,7 @@ function App() {
     carregarProdutos()
   }, [])
 
-  
+
 return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans">
       <header className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -27,10 +36,37 @@ return (
         </button>
       </header>
 
+    <div className="max-w-7xl mx-auto px-4 mb-8">
+      <div className="flex flex-col md:flex-row gap-[20px]">
+        <div className="flex-grow">
+          <input 
+            type="text"
+            placeholder="Buscar produtos..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="w-full p-[12px] border border-[#E5E7EB] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] bg-white text-[#1F2937]"
+          />
+        </div>
+
+        <div className="w-full md:w-[250px]">
+          <select 
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="w-full p-[12px] border border-[#E5E7EB] rounded-[8px] focus:outline-none focus:border-[#3B82F6] bg-white text-[#1F2937] appearance-none"
+          >
+            <option value="Todas">Todas as Categorias</option>
+            {listaCategorias.filter(c => c !== 'Todas').map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+
       <main className="max-w-7xl mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[24px]">
-          {produtos.length > 0 ? (
-            produtos.map(produto => (
+          {produtosFiltrados.length > 0 ? (
+            produtosFiltrados.map(produto => (
               <ProductCard key={produto.id} produto={produto} />
             ))
           ) : (

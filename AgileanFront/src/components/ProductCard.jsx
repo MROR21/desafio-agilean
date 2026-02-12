@@ -26,19 +26,19 @@ const ProductCard = ({ produto }) => {
       <div className="mb-3 flex flex-wrap gap-2">
         {isInativo ? (
           <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-[12px] font-semibold italic">
-            X Indisponível
+            🚫 Indisponível
           </span>
         ) : isSemEstoque ? (
           <span className="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[12px] font-semibold">
-            X Sem Estoque
+            ❌ Sem Estoque
           </span>
         ) : isEstoqueBaixo ? (
           <span className="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[12px] font-semibold">
-             Apenas {produto.estoque} unidades
+            ⚠️ Apenas {produto.estoque} unidades
           </span>
         ) : (
           <span className="bg-[#D1FAE5] text-[#065F46] px-3 py-1 rounded-full text-[12px] font-semibold">
-            ✓ {produto.estoque} unidades
+            ✅ {produto.estoque} unidades
           </span>
         )}
       </div>
@@ -52,12 +52,12 @@ const ProductCard = ({ produto }) => {
         </span>
         
         <div className="flex gap-3">
-          <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#3B82F6] transition-colors">
-            Editar
-          </button>
-          <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#EF4444] transition-colors">
-            Excluir
-          </button>
+        <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#3B82F6]">
+            ✏️ Editar
+        </button>
+        <button className="text-[14px] font-semibold text-[#6B7280] hover:text-[#EF4444]">
+            🗑️ Excluir
+        </button>
         </div>
       </div>
     </div>

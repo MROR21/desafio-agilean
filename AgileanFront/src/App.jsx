@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
 import api from './services/api'
 import ProductCard from './components/ProductCard'
+import ProductModal from './components/ProductModal';
 
 function App() {
  const [produtos, setProdutos] = useState([]);
  const [busca, setBusca] = useState('');  
  const [categoria, setCategoria] = useState('Todas');
  const [disponibilidade, setDisponibilidade] = useState('Todos'); 
- const [ordenacao, setOrdenacao] = useState('recentes'); 
+ const [ordenacao, setOrdenacao] = useState('recentes');
+ const [modalAberto, setModalAberto] = useState(false); 
 
  const listaCategorias = ['Todas', 'Eletrônicos', 'Roupas', 'Alimentos', 'Acessórios', 'Monitores', 'Periféricos'];
 
- useEffect(() => {
-    async function carregarProdutos() {
+ async function carregarProdutos() {
       try {
         const response = await api.get('/produtos')
         setProdutos(response.data)
@@ -20,6 +21,8 @@ function App() {
         console.error("Erro ao carregar:", err)
       }
     }
+    
+  useEffect(() => { 
     carregarProdutos()
   }, [])
 
@@ -48,7 +51,10 @@ return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans">
       <header className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="text-[28px] font-bold text-[#1F2937]">Catálogo de Produtos</h1>
-        <button className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-3 rounded-[8px] font-semibold shadow-sm transition-all flex items-center justify-center gap-2">
+        <button 
+        onClick={() => setModalAberto(true)} 
+        className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-3 rounded-[8px] font-semibold shadow-sm transition-all flex items-center justify-center gap-2"
+        >
           <span>+</span> Novo Produto
         </button>
       </header>
@@ -114,6 +120,11 @@ return (
           )}
         </div>
       </main>
+      <ProductModal 
+        isOpen={modalAberto} 
+        onClose={() => setModalAberto(false)} 
+        onSucesso={carregarProdutos} 
+      />
     </div>
   )
 }

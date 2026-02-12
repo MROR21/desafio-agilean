@@ -6,15 +6,12 @@ function App() {
  const [produtos, setProdutos] = useState([]);
  const [busca, setBusca] = useState('');  
  const [categoria, setCategoria] = useState('Todas');
+ const [disponibilidade, setDisponibilidade] = useState('Todos'); 
+ const [ordenacao, setOrdenacao] = useState('recentes'); 
+
  const listaCategorias = ['Todas', 'Eletrônicos', 'Roupas', 'Alimentos', 'Acessórios', 'Monitores', 'Periféricos'];
 
- const produtosFiltrados = produtos.filter(p => {
- const matchesBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
- const matchesCategoria = categoria === 'Todas' || p.categoria === categoria;
-  return matchesBusca && matchesCategoria;
-  });
-
-  useEffect(() => {
+ useEffect(() => {
     async function carregarProdutos() {
       try {
         const response = await api.get('/produtos')
@@ -25,6 +22,26 @@ function App() {
     }
     carregarProdutos()
   }, [])
+
+ const produtosProcessados = produtos
+  .filter(p => {
+    const matchesBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
+    const matchesCategoria = categoria === 'Todas' || p.categoria === categoria;
+    
+    const matchesDisponibilidade = 
+      disponibilidade === 'Todos' ||
+      (disponibilidade === 'disponiveis' && p.estoque > 0) ||
+      (disponibilidade === 'semEstoque' && p.estoque === 0);
+
+    return matchesBusca && matchesCategoria && matchesDisponibilidade;
+  })
+  .sort((a, b) => {
+    if (ordenacao === 'preco-menor') return a.preco - b.preco;
+    if (ordenacao === 'preco-maior') return b.preco - a.preco;
+    if (ordenacao === 'nome') return a.nome.localeCompare(b.nome);
+    if (ordenacao === 'recentes') return new Date(b.dataCadastro) - new Date(a.dataCadastro);
+    return 0;
+  });
 
 
 return (
@@ -63,10 +80,31 @@ return (
       </div>
     </div>
 
+    <select 
+      value={disponibilidade}
+      onChange={(e) => setDisponibilidade(e.target.value)}
+      className="p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white text-[#1F2937] focus:outline-none"
+   >
+      <option value="Todos">Todos os Status</option>
+      <option value="disponiveis">Disponíveis</option>
+      <option value="semEstoque">Sem Estoque</option>
+    </select>
+
+    <select 
+      value={ordenacao}
+      onChange={(e) => setOrdenacao(e.target.value)}
+      className="p-[12px] border border-[#E5E7EB] rounded-[8px] bg-white text-[#1F2937] focus:outline-none"
+    >
+      <option value="recentes">Mais Recentes</option>
+      <option value="nome">Nome (A-Z)</option>
+      <option value="preco-menor">Menor Preço</option>
+      <option value="preco-maior">Maior Preço</option>
+    </select>
+
       <main className="max-w-7xl mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[24px]">
-          {produtosFiltrados.length > 0 ? (
-            produtosFiltrados.map(produto => (
+          {produtosProcessados.length > 0 ? (
+            produtosProcessados.map(produto => (
               <ProductCard key={produto.id} produto={produto} />
             ))
           ) : (

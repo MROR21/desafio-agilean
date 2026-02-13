@@ -1,14 +1,14 @@
-# Catálogo de Produtos - Desafio Técnico Agilean.
+# Catálogo de Produtos - Desafio Técnico Agilean
 
 Projeto desenvolvido para o processo seletivo de estágio em Desenvolvimento Full Stack.
-A aplicação consiste em um sistema de gerenciamento de produtos com integração entre uma API .NET e um frontend em React.
+A aplicação consiste em um sistema de gerenciamento de produtos, integrando uma API .NET a um frontend em React.
 
 ## Tecnologias Utilizadas
 
 ### Backend
 * **Runtime:** .NET 8.0
 * **ORM:** Entity Framework Core (Code First)
-* **Banco de Dados:** SQLite (pela praticidade e portabilidade no ambiente de desenvolvimento)
+* **Banco de Dados:** SQLite (escolhido pela portabilidade e facilidade de execução para avaliação do projeto, sem necessidade de configuração externa)
 
 ### Frontend
 * **Biblioteca Principal:** React 18 com Vite
@@ -26,7 +26,7 @@ No **Frontend**, adotei a arquitetura **Feature-Based** (`src/features/products`
 A estrutura foi desenhada para manter o código limpo (Clean Code):
 
 #### Frontend (React)
-* **Roteamento:** O arquivo `App.jsx` é responsável apenas por definir as rotas da aplicação.
+* **Roteamento:** O arquivo `App.jsx` é responsável apenas por renderizar a página principal da aplicação, mantendo a raiz do projeto desacoplada da regra de negócio da feature.
 * **Páginas de Funcionalidade:** A `ProductsPage.jsx` centraliza a gestão de dados, estados (filtros, modais) e chamadas de API.
 * **Componentes Puros:** Componentes como `ProductCard` e `ProductModal` são "puros" e focados exclusivamente em exibição, para garantir que sejam previsíveis e fáceis de testar.
 
@@ -49,7 +49,7 @@ A estrutura foi desenhada para manter o código limpo (Clean Code):
 ## Funcionalidades Implementadas
 
 * **CRUD Completo:** Listagem, busca, criação, edição e exclusão de produtos (API e Interface).
-* **Guia Visual:** Implementação rigorosa da paleta de cores, tipografia e espaçamentos sugeridos.
+* **Guia Visual:** Implementação fiel à paleta de cores, tipografia e espaçamentos sugeridos.
 * **Feedback Visual:** Badges dinâmicas para estoque baixo (< 10 unidades), esgotado e indicadores para itens inativos (opacity 0.6).
 * **Segurança na Exclusão:** Modal de confirmação que exibe o nome do produto antes da remoção definitiva.
 
@@ -75,4 +75,4 @@ A estrutura foi desenhada para manter o código limpo (Clean Code):
    * Instale as dependências: `npm install`
    * Inicie a aplicação: `npm run dev`
    * Acesse o link: `http://localhost:5173`
-   * Essa configuração pode ser encontrada no arquivo: src/services/api.js.
+   * Essa configuração pode ser encontrada no arquivo: `src/api/api.js`

@@ -63,7 +63,7 @@ A estrutura foi desenhada para manter o código limpo (Clean Code):
 
 ### Passos para Execução
 1. **Clone o repositório:**
-   `git clone [URL-DO-SEU-REPOSITORIO]`
+   `git clone https://github.com/MROR21/desafio-agilean.git`
 
 2. **Backend (.NET):**
    * Navegue até a pasta `AgileanBack`.

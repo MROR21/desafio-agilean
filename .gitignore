@@ -485,6 +485,6 @@ $RECYCLE.BIN/
 
 
 # --- Custom SQLite Ignore ---
-AgileanBack/*.db
+#AgileanBack/*.db
 AgileanBack/*.db-shm
 AgileanBack/*.db-wal
